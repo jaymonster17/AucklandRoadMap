@@ -21,7 +21,7 @@ public class Road {
     ArrayList<Node> nodes = new ArrayList<Node>();
     ArrayList<Segments> segmentses = new ArrayList<Segments>();
 
-    public Road(int ID, int RT, String name, String City, boolean OW, int spd, int RC, boolean NFC, boolean NFP, boolean NFB){
+    public Road(int ID, int RT, String name, String City, boolean OW, int spd, int RC, boolean NFC, boolean NFP, boolean NFB) {
         this.roadID = ID;
         this.roadType = RT;
         this.label = name;
