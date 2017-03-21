@@ -1,4 +1,4 @@
-9List of files 
+List of files 
 ==============
 All files are tab separated, and have one line describing each item.
 

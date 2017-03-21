@@ -7,33 +7,38 @@ import java.util.ArrayList;
  */
 
 public class Segments {
-    int roadID;
+
     double length;
-    double nodeID1;
-    double nodeID2;
-    ArrayList<double> coords = new ArrayList<double>();
+    Node node1;
+    Node node2;
+    ArrayList<Location> coords = new ArrayList<>();
+    Road road;
 
-    public segments(int ID, double len, double nID1, double nID2, ArrayList<double> coordinates){
-        this.roadID = ID;
+    public Segments(double len, Node n1, Node n2, ArrayList<Location> coordinates, Road r){
         this.length = len;
-        this.nodeID1 = nID1;
-        this.nodeID2 = nID2;
+        this.node1 = n1;
+        this.node2 = n2;
         this.coords = coordinates;
-    }
-
-    public int getRoadID() {
-        return roadID;
+        this.road = r;
     }
 
     public double getLength() {
         return length;
     }
 
-    public double getNodeID1() {
-        return nodeID1;
+    public Node getNode1() {
+        return node1;
     }
 
-    public ArrayList<double> getCoords() {
+    public Node getNode2() {
+        return node2;
+    }
+
+    public ArrayList<Location> getCoords() {
         return coords;
+    }
+
+    public Road getRoad() {
+        return road;
     }
 }

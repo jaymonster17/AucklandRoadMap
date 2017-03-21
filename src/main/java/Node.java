@@ -1,6 +1,8 @@
 package main.java;
 
 
+import java.util.HashSet;
+
 /**
  * Created by wintonnmj on 9/03/17.
  */
@@ -9,11 +11,15 @@ public class Node {
     int ID;
     double latitude;
     double longitude;
+    Location location;
+    HashSet<Segments> segements;
 
-    public Node(int id, int lat, int lon){
+    public Node(int id, double lat, double lon, Location loc, HashSet<Segments> segs){
         this.ID = id;
         this.latitude = lat;
         this.longitude = lon;
+        this.location = loc;
+        this.segements = segs;
     }
 
     public int getID() {
@@ -26,6 +32,10 @@ public class Node {
 
     public double getLongitude() {
         return longitude;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 }
 
