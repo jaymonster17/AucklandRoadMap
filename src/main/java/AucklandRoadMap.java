@@ -72,6 +72,17 @@ public class AucklandRoadMap extends GUI {
 
         searchedRoad.clear();
         searchedRoad.addAll(roadsTrie.getAll(input));
+        fillSelectedSegments();
+    }
+
+    public void fillSelectedSegments(){
+        selectedSegment.clear();
+        for(Road road : searchedRoad){
+            for(Segment segment : road.getSegments()){
+                selectedSegment.add(segment);
+                redraw();
+            }
+        }
     }
 
     public void redraw(Graphics g){
@@ -117,32 +128,20 @@ public class AucklandRoadMap extends GUI {
         Node closest = null;
         selectedNode = new HashMap<Integer, Node>();
         double distToClosest = Double.POSITIVE_INFINITY;
-        for(Node n: nodes.values()) {
+        for (Node n : nodes.values()) {
             double dist = clicked.distance(n.getLocation());
-            if(dist < distToClosest) {
+            if (dist < distToClosest) {
                 closest = n;
                 distToClosest = dist;
             }
         }
 
-        if(closest != null) {
-            selectedNode.put(closest.getID(),closest);
+        if (closest != null) {
+            selectedNode.put(closest.getID(), closest);
             //System.out.print(roads.get(selectedNode.get().getID()).getLabel());
             redraw();
         }
     }
-
-
-//    protected void onSearch() {
-//        JTextField jTextField = getSearchBox();
-//        String input = jTextField.getText();
-//        if(input.equals("")) return;
-//        searchedRoad.clear();
-//        searchedRoad.addAll(roadTrie.get(input));
-//        if (searchedRoad.isEmpty()) {
-//            roadTrie.findAllPrefix(input,searchedRoad);
-//        }
-//    }
 
 
     public void loadRoads(File roadFile){
@@ -219,8 +218,8 @@ public class AucklandRoadMap extends GUI {
                 }
 
                 Segment newSegment = new Segment(segmentLength, node1, node2, locations, road);
-                node1.segments.add(newSegment);
-                node2.segments.add(newSegment);
+                node1.addSegment(newSegment);
+                node2.addSegment(newSegment);
                 segments.add(newSegment);
             }
         }
@@ -238,27 +237,22 @@ public class AucklandRoadMap extends GUI {
     public void onMove(Move m){
         if (m.equals(Move.ZOOM_IN)){
             scale += (scale*0.1);
-            redraw();
         }
         else if (m.equals(Move.ZOOM_OUT)){
             scale -= (scale*0.1);
-            redraw();
         }
         else if (m.equals(Move.NORTH)){
-            origin = new Location (origin.x,origin.y+0.5);
-            redraw();
+            origin = new Location (origin.x,origin.y+1);
         }
         else if (m.equals(Move.EAST)){
-            origin = new Location  (origin.x+0.5,origin.y);
-            redraw();
+            origin = new Location  (origin.x+1,origin.y);
         }
         else if (m.equals(Move.SOUTH)){
-            origin = new Location  (origin.x,origin.y-0.5);
-            redraw();
+            origin = new Location  (origin.x,origin.y-1);
         }
         else if (m.equals(Move.WEST)){
-            origin = new Location  (origin.x-0.5,origin.y);
-            redraw();
+            origin = new Location  (origin.x-1,origin.y);
         }
+        redraw();
     }
 }

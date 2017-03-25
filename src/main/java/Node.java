@@ -8,9 +8,9 @@ import java.util.HashSet;
  */
 public class Node {
 
-    int ID;
-    Location location;
-    Set<Segment> segments = new HashSet<>();
+    private int ID;
+    private Location location;
+    private Set<Segment> segments = new HashSet<>();
 
     public Node(int id, Location loc){
         this.ID = id;
@@ -27,6 +27,10 @@ public class Node {
 
     public Set<Segment> getSegments() {
         return segments;
+    }
+
+    public void addSegment(Segment s) {
+        this.segments.add(s);
     }
 }
 

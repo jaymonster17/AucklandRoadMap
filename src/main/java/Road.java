@@ -7,19 +7,19 @@ import java.util.ArrayList;
  */
 public class Road {
 
-    int roadID;
-    int roadType;
-    String label;
-    String city;
-    boolean oneWay;
-    int speed;
-    int roadClass;
-    boolean notForCar;
-    boolean notForPede;
-    boolean notForBicy;
+    private int roadID;
+    private int roadType;
+    private String label;
+    private String city;
+    private boolean oneWay;
+    private int speed;
+    private int roadClass;
+    private boolean notForCar;
+    private boolean notForPede;
+    private boolean notForBicy;
 
     ArrayList<Node> nodes = new ArrayList<Node>();
-    ArrayList<Segment> segmentses = new ArrayList<Segment>();
+    ArrayList<Segment> segments = new ArrayList<Segment>();
 
     public Road(int ID, int RT, String name, String City, boolean OW, int spd, int RC, boolean NFC, boolean NFP, boolean NFB) {
         this.roadID = ID;
@@ -42,8 +42,8 @@ public class Road {
         return nodes;
     }
 
-    public ArrayList<Segment> getSegmentses() {
-        return segmentses;
+    public ArrayList<Segment> getSegments() {
+        return segments;
     }
 
     public boolean isNotForBicy() {
