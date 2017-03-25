@@ -30,11 +30,12 @@ public class AucklandRoadMap extends GUI {
         new AucklandRoadMap();
     }
 
-    public void onLoad(File nodeFile, File roadFile, File segmentsFile, File x){
+    public void onLoad(File nodeFile, File roadFile, File segmentsFile, File polygons){
         loadRoads(roadFile);
         loadNodes(nodeFile);
         loadSegments(segmentsFile);
         loadTrie();
+        loadPolygons(polygons);
         scaling();
     }
 
@@ -72,55 +73,54 @@ public class AucklandRoadMap extends GUI {
 
         searchedRoad.clear();
         searchedRoad.addAll(roadsTrie.getAll(input));
-        fillSelectedSegments();
-    }
-
-    public void fillSelectedSegments(){
-        selectedSegment.clear();
-        for(Road road : searchedRoad){
-            for(Segment segment : road.getSegments()){
-                selectedSegment.add(segment);
-                redraw();
-            }
-        }
     }
 
     public void redraw(Graphics g){
         if(!nodes.isEmpty()){ //if the map of nodes is not empty
+            g.setColor(Color.RED);
             for(Node n: nodes.values()){ //iterate through the whole map
-                Point point = n.getLocation().asPoint(origin, scale); //create a new point using the location of the current node being processed
-                g.setColor(Color.RED); //set (unselected) color
-                g.fillOval(point.x - 1, point.y - 1 ,4,4);
+                drawNode(g, n);
             }
         }
 
-        if(!segments.isEmpty()){ //if the map of segments is not empty
-            for(Segment s: segments){ //for each segment in the map
-                for(int i = 0; i < s.getCoords().size()-1; i++){ //get the size of the CoOrdinate array and iterate for that long
-                    Point point1 = s.getCoords().get(i).asPoint(origin, scale); //make a point using the first location of the segment
-                    Point point2 = s.getCoords().get(i+1).asPoint(origin, scale); //make a point using the second point of the segment
+        g.setColor(Color.BLACK);
+        for(Road r : roads.values()) {
+            drawRoad(g, r);
+        }
 
-                    g.setColor(Color.BLACK); //set colour
-                    g.drawLine(point1.x, point1.y, point2.x, point2.y); //draw a line from first to second point
-                }
+        if(!searchedRoad.isEmpty()){
+            g.setColor(Color.BLUE);
+            for(Road r : searchedRoad) {
+                drawRoad(g, r);
             }
         }
 
-        if(!selectedSegment.isEmpty()){
-            for (Segment s: selectedSegment){
-                Point pt1 = s.getNode1().getLocation().asPoint(origin, scale);
-                Point pt2 = s.getNode2().getLocation().asPoint(origin, scale);
-                g.setColor(Color.BLUE);
-                g.drawLine(pt1.x, pt1.y, pt2.x, pt2.y);
-            }
-        }
         if(!selectedNode.isEmpty()) {
+            g.setColor(Color.BLUE);
             for (Node n: selectedNode.values()){
-                Point pt = n.getLocation().asPoint(origin, scale);
-                g.setColor(Color.BLUE);
-                g.fillOval(pt.x - 1, pt.y -1,4,4);
+                drawNode(g, n);
             }
         }
+    }
+
+    private void drawRoad(Graphics g, Road road) {
+        if (road == null) {
+            return;
+        }
+
+        for(Segment s: road.getSegments()){ //for each segment in the map
+            for(int i = 0; i < s.getCoords().size()-1; i++){ //get the size of the CoOrdinate array and iterate for that long
+                Point point1 = s.getCoords().get(i).asPoint(origin, scale); //make a point using the first location of the segment
+                Point point2 = s.getCoords().get(i+1).asPoint(origin, scale); //make a point using the second point of the segment
+
+                g.drawLine(point1.x, point1.y, point2.x, point2.y); //draw a line from first to second point
+            }
+        }
+    }
+
+    private void drawNode(Graphics g, Node n){
+        Point pt = n.getLocation().asPoint(origin, scale);
+        g.fillOval(pt.x - 1, pt.y -1,4,4);
     }
 
     protected void onClick(MouseEvent e) {
@@ -220,6 +220,7 @@ public class AucklandRoadMap extends GUI {
                 Segment newSegment = new Segment(segmentLength, node1, node2, locations, road);
                 node1.addSegment(newSegment);
                 node2.addSegment(newSegment);
+                road.addSegment(newSegment);
                 segments.add(newSegment);
             }
         }
@@ -233,6 +234,8 @@ public class AucklandRoadMap extends GUI {
             roadsTrie.put(road.getLabel(), road);
         }
     }
+
+    public void loadPolygons(File p){}
 
     public void onMove(Move m){
         if (m.equals(Move.ZOOM_IN)){

@@ -18,8 +18,8 @@ public class Road {
     private boolean notForPede;
     private boolean notForBicy;
 
-    ArrayList<Node> nodes = new ArrayList<Node>();
-    ArrayList<Segment> segments = new ArrayList<Segment>();
+    private ArrayList<Node> nodes = new ArrayList<Node>();
+    private ArrayList<Segment> segments = new ArrayList<Segment>();
 
     public Road(int ID, int RT, String name, String City, boolean OW, int spd, int RC, boolean NFC, boolean NFP, boolean NFB) {
         this.roadID = ID;
@@ -80,5 +80,13 @@ public class Road {
 
     public String getLabel() {
         return label;
+    }
+
+    public void setSegments(ArrayList<Segment> segments) {
+        this.segments = segments;
+    }
+
+    public void addSegment(Segment s){
+        segments.add(s);
     }
 }
