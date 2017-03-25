@@ -19,7 +19,7 @@ public class Road {
     boolean notForBicy;
 
     ArrayList<Node> nodes = new ArrayList<Node>();
-    ArrayList<Segments> segmentses = new ArrayList<Segments>();
+    ArrayList<Segment> segmentses = new ArrayList<Segment>();
 
     public Road(int ID, int RT, String name, String City, boolean OW, int spd, int RC, boolean NFC, boolean NFP, boolean NFB) {
         this.roadID = ID;
@@ -42,7 +42,7 @@ public class Road {
         return nodes;
     }
 
-    public ArrayList<Segments> getSegmentses() {
+    public ArrayList<Segment> getSegmentses() {
         return segmentses;
     }
 

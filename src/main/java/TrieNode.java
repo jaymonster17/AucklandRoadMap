@@ -1,41 +1,41 @@
 package main.java;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.*;
 
-/**
- * Created by
- * wintonnmj on 22/03/17.
- */
+public class TrieNode<T> {
+    private T markedValue;
+    private HashMap<Character, TrieNode> children;
 
-public class TrieNode {
-
-
-    String isWord = null;
-    Road road = null;
-    Map <Character,TrieNode> children = new HashMap<>();
-
-    public TrieNode(String w, Map<Character, TrieNode> kids){
-        this.children = kids;
-        this.isWord = w;
-
+    public TrieNode() {
+        this.markedValue = null;
+        this.children = new HashMap<Character, TrieNode>();
     }
 
-    public String isWord(){
-        return isWord;
+    public void addChild(Character child) {
+        this.children.put(child, new TrieNode());
     }
 
-    public void setWord(String value){
-        this.isWord = value;
+    public TrieNode<T> getChild(Character child) {
+        return this.children.get(child);
     }
 
-    public Road getRoad() {
-        return road;
+    public boolean hasChild(Character child) {
+        return this.children.containsKey(child);
     }
 
-    public void setRoad(Road road) {
-        this.road = road;
+    public void setMarkedValue(T markedValue) {
+        this.markedValue = markedValue;
     }
 
+    public T getMarkedValue() {
+        return this.markedValue;
+    }
+
+    public boolean isMarked() {
+        return this.markedValue != null;
+    }
+
+    public HashMap<Character, TrieNode> getChildren() {
+        return this.children;
+    }
 }
