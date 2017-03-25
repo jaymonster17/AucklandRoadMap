@@ -12,14 +12,13 @@ public class Node {
     double latitude;
     double longitude;
     Location location;
-    HashSet<Segments> segements;
+    HashSet<Segments> segments = new HashSet<>();
 
-    public Node(int id, double lat, double lon, Location loc, HashSet<Segments> segs){
+    public Node(int id, double lat, double lon, Location loc){
         this.ID = id;
         this.latitude = lat;
         this.longitude = lon;
         this.location = loc;
-        this.segements = segs;
     }
 
     public int getID() {
@@ -36,6 +35,10 @@ public class Node {
 
     public Location getLocation() {
         return location;
+    }
+
+    public HashSet<Segments> getSegments() {
+        return segments;
     }
 }
 

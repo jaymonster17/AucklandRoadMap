@@ -28,6 +28,7 @@ public class AucklandRoadMap extends GUI {
     public List<Segments> segments = new ArrayList<>();
     public List<Segments> selectedSegment = new ArrayList<>();
     public Map<Integer,Node> selectedNode = new HashMap<Integer,Node>();
+    public Trie trie = new Trie();
 
     public void scaling(){
         double top = Double.NEGATIVE_INFINITY;
@@ -57,21 +58,21 @@ public class AucklandRoadMap extends GUI {
 
     public void redraw(Graphics g){
         if(!nodes.isEmpty()){ //if the map of nodes is not empty
-            for(Node n: nodes.values()){ //
-                Point point = n.getLocation().asPoint(origin, scale);
-                g.setColor(Color.RED);
-                g.fillOval(point.x - 1, point.y -1 ,4,4);
+            for(Node n: nodes.values()){ //iterate through the whole map
+                Point point = n.getLocation().asPoint(origin, scale); //create a new point using the location of the current node being processed
+                g.setColor(Color.RED); //set (unselected) color
+                g.fillOval(point.x - 1, point.y - 1 ,4,4);
             }
         }
 
-        if(!segments.isEmpty()){
-            for(Segments s: segments){
-                for(int i = 0; i < s.getCoords().size()-1; i++){
-                    Point point1 = s.getCoords().get(i).asPoint(origin, scale);
-                    Point point2 = s.getCoords().get(i+1).asPoint(origin, scale);
+        if(!segments.isEmpty()){ //if the map of segments is not empty
+            for(Segments s: segments){ //for each segment in the map
+                for(int i = 0; i < s.getCoords().size()-1; i++){ //get the size of the CoOrdinate array and iterate for that long
+                    Point point1 = s.getCoords().get(i).asPoint(origin, scale); //make a point using the first location of the segment
+                    Point point2 = s.getCoords().get(i+1).asPoint(origin, scale); //make a point using the second point of the segment
 
-                    g.setColor(Color.BLACK);
-                    g.drawLine(point1.x, point1.y, point2.x, point2.y);
+                    g.setColor(Color.BLACK); //set colour
+                    g.drawLine(point1.x, point1.y, point2.x, point2.y); //draw a line from first to second point
                 }
             }
         }
@@ -80,7 +81,7 @@ public class AucklandRoadMap extends GUI {
             for (Segments s: selectedSegment){
                 Point pt1 = s.getNode1().getLocation().asPoint(origin, scale);
                 Point pt2 = s.getNode2().getLocation().asPoint(origin, scale);
-                g.setColor(Color.YELLOW);
+                g.setColor(Color.BLUE);
                 g.drawLine(pt1.x, pt1.y, pt2.x, pt2.y);
             }
         }
@@ -88,7 +89,7 @@ public class AucklandRoadMap extends GUI {
             for (Node n: selectedNode.values()){
                 Point pt = n.getLocation().asPoint(origin, scale);
                 g.setColor(Color.BLUE);
-                g.fillOval(pt.x - 1, pt.y -1 ,4,4);
+                g.fillOval(pt.x - 1, pt.y -1,4,4);
             }
         }
     }
@@ -106,34 +107,91 @@ public class AucklandRoadMap extends GUI {
             }
         }
         selectedNode.put(closest.getID(),closest);
+        //System.out.print(roads.get(selectedNode.get().getID()).getLabel());
         redraw();
     }
 
+
     protected void onSearch() {
-        String name = getSearchBox().getText();
-        for (Road r: roads.values()){
-            if (r.getLabel().equals(name)){
-                for (Segments s: segments){
-                    if (s.getRoad().equals(r)){
-                        selectedSegment.add(s);
-                        redraw();
-                    }
-                }
-            }
+        if (trie == null) {
+            return;
         }
+
+        // get the search query and run it through the trie.
+        String prefix = getSearchBox().getText();
+        System.out.print(prefix);
+        ArrayList<Road> selected = trie.withPrefix(prefix);
+
+        // figure out if any of our selected roads exactly matches the search
+        // query. if so, as per the specification, we should only highlight
+        // exact matches. there may be (and are) many exact matches, however, so
+        // we have to do this carefully.
+//        boolean exactMatch = false;
+//        for (Road road : selected)
+//            if (road.label.equals(prefix)) {
+//                exactMatch = true;
+//            }
+//
+//        // make a set of all the roads that match exactly, and make this our new
+//        // selected set.
+//        ArrayList<Road> exactMatches = new ArrayList<>();
+//        if (exactMatch) {
+//            for (Road road : selected)
+//                if (road.label.equals(prefix))
+//                    exactMatches.add(road);
+//            selected = exactMatches;
+//        }
+
+        // set the highlighted roads.
+        //graph.setHighlight(selected);
+        for(Road r: selected){
+        for(Segments s: r.getSegmentses()){
+            selectedSegment.add(s);
+        }
+        }
+        redraw();
+
+
+        // now build the string for display. we filter out duplicates by putting
+        // it through a set first, and then combine it.
+        ArrayList<String> names = new ArrayList<>();
+        for (Road road : selected)
+            names.add(road.label);
+        String str = "";
+        for (String name : names)
+            str += name + "; ";
+
+        if (str.length() != 0)
+            str = str.substring(0, str.length() - 2);
+        getTextOutputArea().setText(str);
     }
+
+
+//    protected void onSearch() {
+//        String name = getSearchBox().getText();
+//        for (Road r: roads.values()){
+//            if (r.getLabel().equals(name)){
+//                for (Segments s: segments){
+//                    if (s.getRoad().equals(r)){
+//                        selectedSegment.add(s);
+//                        redraw();
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     public void loadRoads(File roadFile){
         try{
-            BufferedReader roadFileReader = new BufferedReader(new FileReader(roadFile));
+            BufferedReader roadFileReader = new BufferedReader(new FileReader(roadFile)); //create buffered reader, pass it a file reader, pass that the file (from on load)
 //http://stackoverflow.com/questions/13405822/using-bufferedreader-readline-in-a-while-loop-properly
             roadFileReader.readLine(); //Skip header
-            for(String line = roadFileReader.readLine(); line != null; line = roadFileReader.readLine()){
-                String [] roadInfo = line.split("\t");
-                int roadID = Integer.parseInt(roadInfo[0]);
-                int roadType = Integer.parseInt(roadInfo[1]);
-                String roadLabel = roadInfo[2];
-                String roadCity = roadInfo[3];
+            for(String line = roadFileReader.readLine(); line != null; line = roadFileReader.readLine()){ //while there are still lines
+                String [] roadInfo = line.split("\t"); //split the string into a string Array by tabs
+                int roadID = Integer.parseInt(roadInfo[0]); //define roadID
+                int roadType = Integer.parseInt(roadInfo[1]); //define roadType
+                String roadLabel = roadInfo[2]; //define roadLabel
+                String roadCity = roadInfo[3]; //define
                 boolean oneWay = Boolean.parseBoolean(roadInfo[4]);
                 int speed = Integer.parseInt(roadInfo[5]);
                 int roadClass = Integer.parseInt(roadInfo[6]);
@@ -161,9 +219,8 @@ public class AucklandRoadMap extends GUI {
                 double latitude = Double.parseDouble(nodeInfo[1]);
                 double longititude = Double.parseDouble(nodeInfo[2]);
                 Location location = Location.newFromLatLon(latitude, longititude);
-                HashSet<Segments> nodeSegments = new HashSet<>();
 
-                Node newNode = new Node(nodeID, latitude, longititude, location, nodeSegments);
+                Node newNode = new Node(nodeID, latitude, longititude, location);
                 nodes.put(nodeID, newNode);
             }
             nodeFileReader.close();
@@ -198,8 +255,8 @@ public class AucklandRoadMap extends GUI {
                 }
 
                 Segments newSegment = new Segments(segmentLength, node1, node2, locations, road);
-                node1.segements.add(newSegment);
-                node2.segements.add(newSegment);
+                node1.segments.add(newSegment);
+                node2.segments.add(newSegment);
                 segments.add(newSegment);
             }
         }
