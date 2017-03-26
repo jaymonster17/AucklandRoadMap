@@ -1,5 +1,7 @@
 package main.java;
 
+import com.sun.glass.events.WheelEvent;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -77,6 +79,10 @@ public abstract class GUI {
 	 * Move enum is passed, representing the button clicked by the user.
 	 */
 	protected abstract void onMove(Move m);
+
+
+
+	protected abstract void onWheel(MouseWheelEvent e);
 
 	/**
 	 * Is called when the user has successfully selected a directory to load the
@@ -385,6 +391,8 @@ public abstract class GUI {
 
 		drawing.addMouseWheelListener(new MouseAdapter() {
 			public void mouseWheelMoved(MouseWheelEvent e) {
+				onWheel(e);
+				redraw();
 			}
 		});
 
@@ -396,7 +404,7 @@ public abstract class GUI {
 		textOutputArea = new JTextArea(TEXT_OUTPUT_ROWS, 0);
 		textOutputArea.setLineWrap(true);
 		textOutputArea.setWrapStyleWord(true); // pretty line wrap.
-		textOutputArea.setEditable(false);
+		textOutputArea.setEditable(true);
 		JScrollPane scroll = new JScrollPane(textOutputArea);
 		// these two lines make the JScrollPane always scroll to the bottom when
 		// text is appended to the JTextArea.

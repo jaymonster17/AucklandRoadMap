@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,11 @@ public class SquaresExample extends GUI {
 	protected void redraw(Graphics g) {
 		for (Square s : squares)
 			s.draw(g);
+	}
+
+	@Override
+	protected void onWheel(MouseWheelEvent e){
+
 	}
 
 	@Override

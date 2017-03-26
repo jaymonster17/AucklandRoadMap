@@ -1,6 +1,7 @@
 package main.java;
 
 import javax.swing.*;
+import java.awt.event.MouseWheelEvent;
 import java.util.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -21,8 +22,8 @@ public class AucklandRoadMap extends GUI {
     private Map<Integer, Node> nodes = new HashMap<Integer, Node>();
     private List<Segment> segments = new ArrayList<>();
     private Trie<Road> roadsTrie = new Trie<Road>();
+    private Set<Polygon> polygons = new HashSet<>();
 
-    private List<Segment> selectedSegment = new ArrayList<>();
     private Map<Integer, Node> selectedNode = new HashMap<Integer, Node>();
     private List<Road> searchedRoad = new ArrayList<>();
 
@@ -76,6 +77,13 @@ public class AucklandRoadMap extends GUI {
     }
 
     public void redraw(Graphics g){
+        g.setColor(Color.DARK_GRAY);
+        for (Polygon polygon: polygons) {
+            int x[] = polygon.getX();
+            int y[] = polygon.getY();
+            g.fillPolygon(x,y, x.length);
+        }
+
         if(!nodes.isEmpty()){ //if the map of nodes is not empty
             g.setColor(Color.RED);
             for(Node n: nodes.values()){ //iterate through the whole map
@@ -141,8 +149,28 @@ public class AucklandRoadMap extends GUI {
             //System.out.print(roads.get(selectedNode.get().getID()).getLabel());
             redraw();
         }
+
+
+//        Road temp = roads.get(closest.getID());
+//        String roadName = temp.getLabel();
+//        JTextArea output = getTextOutputArea();
+//        output.append(roadName);
+//        output.append("\n");
+//        for (String s:roadNames) {
+//            output.append(s);
+//            output.append("\n");
+//        }
     }
 
+    protected void onWheel(MouseWheelEvent e) {
+        int rotation = e.getWheelRotation();
+        if (rotation > 0) {scale  *= rotation * 1.5;}
+        else if (rotation < 0) {scale /= -rotation * 1.5;}
+    }
+
+    protected void onDrag(int[] movement) {
+        origin = new Location(origin.x + movement[1],origin.y + movement[0]);
+    }
 
     public void loadRoads(File roadFile){
         try{
@@ -235,7 +263,34 @@ public class AucklandRoadMap extends GUI {
         }
     }
 
-    public void loadPolygons(File p){}
+    public void loadPolygons(File polygonFile){
+        if(polygonFile == null) { return; }
+
+        try {
+            FileReader fileReader = new FileReader(polygonFile);
+            BufferedReader polygonFileReader = new BufferedReader(fileReader); //make reader
+            while(polygonFileReader.ready()) { //while it had data in the file
+                String line = polygonFileReader.readLine();
+                if (!line.startsWith("Data0")) {
+                    continue;
+                }
+                line = line.substring(7,line.length()-2);
+                String[] polygonData = line.split("\\),\\("); //ignore brackets, split by commas
+                Polygon polygon = new Polygon(); //make a new polygon object
+                for (int i = 0; i < polygonData.length; i++) { //
+                    String[] latLongStringArray = polygonData[i].split(","); //split the vector into the x/y coordinates by splitting with comma
+                    double[] latLongDoubleArray = new double[2]; //double array that will hold the x/y positions
+                    latLongDoubleArray[0] = Double.parseDouble(latLongStringArray[0]); //x pos == parsed double from xyPoints
+                    latLongDoubleArray[1] = Double.parseDouble(latLongStringArray[1]); //y pos == parsed double from xyPoints
+                    Location point = Location.newFromLatLon(latLongDoubleArray[0], latLongDoubleArray[1]);
+                    polygon.addPoint(point); //add the vector into the polygon object as a point
+                }
+                this.polygons.add(polygon); //add the polygon object to the polygons set.
+            }
+        } catch (IOException e) {
+            System.out.println("caught exception: " + e);
+        }
+    }
 
     public void onMove(Move m){
         if (m.equals(Move.ZOOM_IN)){
@@ -245,16 +300,16 @@ public class AucklandRoadMap extends GUI {
             scale -= (scale*0.1);
         }
         else if (m.equals(Move.NORTH)){
-            origin = new Location (origin.x,origin.y+1);
+            origin = new Location(origin.x,origin.y+1);
         }
         else if (m.equals(Move.EAST)){
-            origin = new Location  (origin.x+1,origin.y);
+            origin = new Location(origin.x+1,origin.y);
         }
         else if (m.equals(Move.SOUTH)){
-            origin = new Location  (origin.x,origin.y-1);
+            origin = new Location(origin.x,origin.y-1);
         }
         else if (m.equals(Move.WEST)){
-            origin = new Location  (origin.x-1,origin.y);
+            origin = new Location(origin.x-1,origin.y);
         }
         redraw();
     }
