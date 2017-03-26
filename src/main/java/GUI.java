@@ -75,9 +75,16 @@ public abstract class GUI {
 	protected abstract void onMove(Move m);
 
 
-
+	/**
+	 * Is called whenever a mouse is clicked and dragged. An instance of the
+	 * MouseWheelEvent enum is passed, representing the mouse rolled by the user.
+	 */
 	protected abstract void onWheel(MouseWheelEvent e);
 
+	/**
+	 * Is called whenever a mouse(or trackpad scroll) is used.
+	 * The vector coordinates are passed to shift the origin.
+	 */
 	protected abstract void onDrag(int x, int y);
 
 	/**
@@ -170,8 +177,8 @@ public abstract class GUI {
 	private JTextField search;
 	private JFileChooser fileChooser;
 
-	private int draggedX;
-	private int draggedY;
+	private int draggedX; //place holder for the xpos of the mouse when clicked (before the drag)
+	private int draggedY; //place holder for the ypos of the mouse when clicked (before the drag)
 
 	public GUI() {
 		initialise();
@@ -389,16 +396,16 @@ public abstract class GUI {
 			}
 
 			@Override
-			public void mousePressed(MouseEvent e) {
+			public void mousePressed(MouseEvent e) { //used for the onDrag method to set the starting vector of the drag
 				draggedX = e.getX();
 				draggedY = e.getY();
 			}
 		});
 
-		drawing.addMouseWheelListener(new MouseAdapter() {
+		drawing.addMouseWheelListener(new MouseAdapter() { //adds the wheel listener
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
-				onWheel(e);
+				onWheel(e); //passes in the wheel event
 				redraw();
 			}
 		});
@@ -406,13 +413,13 @@ public abstract class GUI {
 		drawing.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				int x = e.getX();
-				int y = e.getY();
+				int x = e.getX(); //gets end xpos of the vector of the drag
+				int y = e.getY(); //gets end ypos of the vector of the drag
 
-				onDrag(-(x - draggedX), y - draggedY);
+				onDrag(-(x - draggedX), y - draggedY); //passes in the vector (x is inverterted, not sure why but it fixed my issue)
 
-				draggedX = x;
-				draggedY = y;
+				draggedX = x; //resets the draggedX
+				draggedY = y; //resets the draggedX
 
 				redraw();
 			}

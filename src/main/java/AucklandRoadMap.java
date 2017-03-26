@@ -133,33 +133,37 @@ public class AucklandRoadMap extends GUI {
 
     protected void onClick(MouseEvent e) {
         Location clicked = Location.newFromPoint(e.getPoint(), origin, scale);
-        Node closest = null;
+        Node closestNode = null;
         selectedNode = new HashMap<Integer, Node>();
         double distToClosest = Double.POSITIVE_INFINITY;
         for (Node n : nodes.values()) {
             double dist = clicked.distance(n.getLocation());
             if (dist < distToClosest) {
-                closest = n;
+                closestNode = n;
                 distToClosest = dist;
             }
         }
 
-        if (closest != null) {
-            selectedNode.put(closest.getID(), closest);
-            //System.out.print(roads.get(selectedNode.get().getID()).getLabel());
+        if (closestNode != null) {
+            selectedNode.put(closestNode.getID(), closestNode);
             redraw();
         }
 
 
-//        Road temp = roads.get(closest.getID());
-//        String roadName = temp.getLabel();
-//        JTextArea output = getTextOutputArea();
-//        output.append(roadName);
-//        output.append("\n");
-//        for (String s:roadNames) {
-//            output.append(s);
-//            output.append("\n");
-//        }
+        JTextArea textArea = getTextOutputArea();
+        int intersectionID = closestNode.getID();
+        textArea.append("Intersection ID:" + intersectionID + "\n");
+
+        Set<String> roadLabels = new HashSet<String>(); // set to avoid duplicates
+        textArea.append("Roads at intersection: \n");
+
+        for(Segment s : closestNode.getSegments()){
+            roadLabels.add(s.getRoadLabel());
+        }
+
+        textArea.append(roadLabels.toString() + "\n");
+        textArea.append("\n");
+
     }
 
     protected void onWheel(MouseWheelEvent e) {
