@@ -47,9 +47,10 @@ public class SquaresExample extends GUI {
 	}
 
 	@Override
-	protected void onWheel(MouseWheelEvent e){
+	protected void onWheel(MouseWheelEvent e){}
 
-	}
+	@Override
+	protected void onDrag(int x, int y){}
 
 	@Override
 	protected void onClick(MouseEvent e) {

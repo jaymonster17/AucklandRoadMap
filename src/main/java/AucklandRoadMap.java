@@ -168,8 +168,8 @@ public class AucklandRoadMap extends GUI {
         else if (rotation < 0) {scale /= -rotation * 1.5;}
     }
 
-    protected void onDrag(int[] movement) {
-        origin = new Location(origin.x + movement[1],origin.y + movement[0]);
+    protected void onDrag(int x, int y) {
+        origin = new Location(origin.x + x, origin.y + y);
     }
 
     public void loadRoads(File roadFile){

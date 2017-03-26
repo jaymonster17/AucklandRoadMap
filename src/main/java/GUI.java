@@ -6,13 +6,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
+import java.awt.event.*;
 import java.io.File;
 
 import javax.swing.BorderFactory;
@@ -83,6 +77,8 @@ public abstract class GUI {
 
 
 	protected abstract void onWheel(MouseWheelEvent e);
+
+	protected abstract void onDrag(int x, int y);
 
 	/**
 	 * Is called when the user has successfully selected a directory to load the
@@ -173,6 +169,9 @@ public abstract class GUI {
 
 	private JTextField search;
 	private JFileChooser fileChooser;
+
+	private int draggedX;
+	private int draggedY;
 
 	public GUI() {
 		initialise();
@@ -383,15 +382,38 @@ public abstract class GUI {
 		drawing.setVisible(true);
 
 		drawing.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseReleased(MouseEvent e) {
 				onClick(e);
 				redraw();
 			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				draggedX = e.getX();
+				draggedY = e.getY();
+			}
 		});
 
 		drawing.addMouseWheelListener(new MouseAdapter() {
+			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				onWheel(e);
+				redraw();
+			}
+		});
+
+		drawing.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				int x = e.getX();
+				int y = e.getY();
+
+				onDrag(-(x - draggedX), y - draggedY);
+
+				draggedX = x;
+				draggedY = y;
+
 				redraw();
 			}
 		});
