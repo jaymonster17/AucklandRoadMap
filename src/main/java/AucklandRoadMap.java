@@ -15,8 +15,8 @@ import java.awt.Point;
 
 public class AucklandRoadMap extends GUI {
 
-    private Location origin = new Location(-36.849920, 174.760981);
-    private double scale = 0.1;
+    private Location origin;
+    private double scale;
 
     private Map<Integer, Road> roads = new HashMap<Integer, Road>();
     private Map<Integer, Node> nodes = new HashMap<Integer, Node>();
@@ -70,10 +70,22 @@ public class AucklandRoadMap extends GUI {
         JTextField jTextField = getSearchBox();
         String input = jTextField.getText();
 
-        if(input.equals("")) return;
+        if(input.equals("")){
+            return;
+        }
 
         searchedRoad.clear();
         searchedRoad.addAll(roadsTrie.getAll(input));
+
+        Set<String> roadNames = new HashSet<>();
+        for(Road r : searchedRoad){
+            roadNames.add(r.getLabel());
+        }
+
+        JTextArea textArea = getTextOutputArea();
+        textArea.append("All Possible Roads that you could be looking for: \n");
+        textArea.append(roadNames.toString() + "\n");
+        textArea.append("\n");
     }
 
     public void redraw(Graphics g){
@@ -168,8 +180,8 @@ public class AucklandRoadMap extends GUI {
 
     protected void onWheel(MouseWheelEvent e) {
         int rotation = e.getWheelRotation();
-        if (rotation > 0) {scale  *= rotation * 1.5;}
-        else if (rotation < 0) {scale /= -rotation * 1.5;}
+        if (rotation > 0) {scale  *= rotation * 1.05;}
+        else if (rotation < 0) {scale /= -rotation * 1.05;}
     }
 
     protected void onDrag(int x, int y) {
